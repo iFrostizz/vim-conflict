@@ -1,7 +1,7 @@
 " conflict.vim - Open all git conflicting files in buffers
 " Last Change:	 2023 Sept 04
 " Maintainer:	   Franfran <hello@franfran.dev>
-" License:       MIT
+" License:       GPL-3.0
 
 if exists("g:loaded_conflict")
   finish
@@ -38,12 +38,39 @@ function! s:GitDiff()
   return s:AsUnique(diff_files)
 endfunction
 
+function! s:AnyEq(_list, _eq)
+  for el in a:_list
+    if el == a:_eq
+      return 1
+    endif
+  endfor
+  return 0
+endfunction
+
+" TODO make this an option
+let s:max_lines = 10000 " try to avoid loading too much lines in memory
+
+function! s:Conflicting(_file_loc)
+  let conflicting = []
+  for _loc in a:_file_loc
+    let content_list = readfile(_loc, "", s:max_lines)
+    if s:AnyEq(content_list, "<<<<<<< HEAD")
+      call add(conflicting, _loc)
+    endif
+  endfor
+  return conflicting
+endfunction
+
 function! s:OpenConflicts()
-  let root = s:GitRoot()
   let files = s:GitDiff()
-  let as_str = s:ConcatList(files)
-  echo as_str
-  execute "args " . as_str
+  let conf_files = s:Conflicting(files)
+  if len(conf_files) == 0
+    echo "No conflicts found!"
+  else
+    let as_str = s:ConcatList(conf_files)
+    echo "Opening " . as_str
+    execute "args " . as_str
+  endif
 endfunction
 
 if !exists(":Conflicts")

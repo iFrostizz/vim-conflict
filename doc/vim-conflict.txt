@@ -1,0 +1,24 @@
+*conflict.txt*  Open all git conflicts in messy buffers
+
+Author:  Franfran <https://franfran.dev/>
+License: GPL-3.0
+
+INTRODUCTION                    *conflict*
+
+This plugin is a utility for opening all git conflicting files in buffers with the `:Conflicts` command.
+It works by running `git diff --name-only` command which returns the name of all conflicting files.
+We then turn it into a one liner and open all the files using the 
+
+<
+  args some/file1 some/file2
+>
+
+command.
+
+REQUIREMENTS                    *conflict-requirements*
+
+git 
+
+MISC                            *conflict-misc*
+
+vim-conflict should be a global plugin, so not tied to any FileType.
